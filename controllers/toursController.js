@@ -23,11 +23,9 @@ const createTour = (req, res) => {
     `${__dirname}/../dev-data/data/tours-simple.json`,
     JSON.stringify(tours),
     (err) => {
-      console.log(err);
+      res.status(201).json({ status: 'success', data: { newTour } });
     }
   );
-
-  res.status(201).json({ status: 'success', data: { newTour } });
 };
 
 module.exports = { getAllTours, createTour };
