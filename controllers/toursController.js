@@ -28,4 +28,22 @@ const createTour = (req, res) => {
   );
 };
 
-module.exports = { getAllTours, createTour };
+const getTour = (req, res) => {
+  const { id } = req.params;
+  const tour = tours.find((el) => el.id === Number(id));
+  if (!tour) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour,
+    },
+  });
+};
+
+module.exports = { getAllTours, createTour, getTour };
