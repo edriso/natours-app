@@ -28,34 +28,27 @@ const createUser = (req, res) => {
   );
 };
 
-const getUser = (req, res) => {
-  const { id } = req.params;
-  const user = users.find((el) => el.id === Number(id));
+const checkID = (req, res, next, val) => {
+  const user = users.find((el) => el.id === Number(val));
   if (!user) {
     return res.status(404).json({
       status: 'fail',
       message: 'Invalid ID',
     });
   }
+  next();
+};
 
+const getUser = (req, res) => {
   res.status(200).json({
     status: 'success',
     data: {
-      user,
+      user: '<GET USER>',
     },
   });
 };
 
 const updateUser = (req, res) => {
-  const { id } = req.params;
-  const user = users.find((el) => el.id === Number(id));
-  if (!user) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-
   res.status(200).json({
     status: 'success',
     data: {
@@ -65,29 +58,17 @@ const updateUser = (req, res) => {
 };
 
 const deleteUser = (req, res) => {
-  const { id } = req.params;
-  const user = users.find((el) => el.id === Number(id));
-  if (!user) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-
-  users = users.filter((el) => el.id !== user.id);
-
-  fs.writeFile(
-    `${__dirname}/../dev-data/data/users.json`,
-    JSON.stringify(users),
-    (err) => {
-      res.status(204).json({
-        status: 'success',
-        data: {
-          user: null,
-        },
-      });
-    }
-  );
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
 };
 
-module.exports = { getAllUsers, createUser, getUser, updateUser, deleteUser };
+module.exports = {
+  getAllUsers,
+  createUser,
+  getUser,
+  updateUser,
+  deleteUser,
+  checkID,
+};
