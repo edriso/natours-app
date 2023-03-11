@@ -1,7 +1,4 @@
 {
-  "engines": {
-    "node": ">=8.0.0"
-  },
   "extends": ["airbnb", "prettier", "plugin:node/recommended"],
   "plugins": ["prettier"],
   "rules": {
