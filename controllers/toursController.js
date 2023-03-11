@@ -78,11 +78,11 @@ const deleteTour = (req, res) => {
 };
 
 module.exports = {
+  checkID,
+  checkBody,
   getAllTours,
   createTour,
   getTour,
   updateTour,
   deleteTour,
-  checkID,
-  checkBody,
 };
