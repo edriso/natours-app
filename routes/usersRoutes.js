@@ -3,8 +3,6 @@ const router = express.Router();
 
 const usersController = require('../controllers/usersController');
 
-router.param('id', usersController.checkID);
-
 router
   .route('/')
   .get(usersController.getAllUsers)

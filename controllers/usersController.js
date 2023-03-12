@@ -4,17 +4,6 @@ let users = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/users.json`)
 );
 
-const checkID = (req, res, next, val) => {
-  const user = users.find((el) => el.id === Number(val));
-  if (!user) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-  next();
-};
-
 const getAllUsers = (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -65,7 +54,6 @@ const deleteUser = (req, res) => {
 };
 
 module.exports = {
-  checkID,
   getAllUsers,
   createUser,
   getUser,
