@@ -18,15 +18,7 @@ const getAllTours = async (req, res) => {
 
     let query = Tour.find(queryObject);
 
-    // 2) Sorting
-    if (req.query.sort) {
-      const sortBy = req.query.sort.split(',').join(' '); // ('price -duration')
-      query = query.sort(sortBy);
-    } else {
-      query = query.sort('-createdAt');
-    }
-
-    // 3) Fields Limiting
+    // 2) Fields Limiting
     if (req.query.fields) {
       const selectedFields = req.query.fields.split(',').join(' ');
       console.log(selectedFields);
@@ -35,7 +27,7 @@ const getAllTours = async (req, res) => {
       query = query.select('-__v');
     }
 
-    // 4) Pagination
+    // 3) Pagination
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 100;
     const skip = (page - 1) * limit;
@@ -46,6 +38,21 @@ const getAllTours = async (req, res) => {
     if (req.query.page) {
       const toursNumber = await Tour.countDocuments();
       if (skip >= toursNumber) throw 'This page does not exist';
+    }
+
+    // 4) Sorting
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' ');
+      query = query.sort(sortBy);
+    } else {
+      /*
+      ('-createdAt _id') instead of ('-createdAt') to fix the bug of repeated tours when using pagination
+      https://www.udemy.com/course/nodejs-express-mongodb-bootcamp/learn/lecture/15065096#questions/14026396
+      - According to documentation at Mongo
+      when using $skip with $sort it is advised to include _id or another unique identifier
+      as any duplicates can cause errors (as we have seen).
+      */
+      query = query.sort('-createdAt _id');
     }
 
     // Execute Query

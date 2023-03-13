@@ -54,7 +54,7 @@ const tourSchema = new mongoose.Schema(
     startDates: [Date],
     // createdAt: {
     //   type: Date,
-    //   default: Date.now(),
+    //   default: Date.now, //Date.now instead of Date.now(); this let's atlas make the time when going to server so it will be at least 1 millisecond difference "unique value"
     //   select: false,
     // },
   },
