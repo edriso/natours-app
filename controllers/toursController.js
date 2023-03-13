@@ -8,15 +8,23 @@ const getAllTours = async (req, res) => {
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach((el) => delete queryObject[el]);
 
-    // 2) Advanced filtering (gt, lte)
+    // Advanced filtering (gt, lte)
     let queryString = JSON.stringify(queryObject);
     queryString = queryString.replace(
       /\b(gte|gt|lte|lt)\b/g,
-      (matchedVal) => `$${matchedVal}`
+      (match) => `$${match}`
     ); // \b for exact word
     queryObject = JSON.parse(queryString);
 
-    const query = Tour.find(queryObject);
+    let query = Tour.find(queryObject);
+
+    // 2) Sorting
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' '); // ('price -duration')
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort('-createdAt');
+    }
 
     // Execute Query
     const tours = await query;
