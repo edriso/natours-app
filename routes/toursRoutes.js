@@ -6,6 +6,10 @@ const toursController = require('../controllers/toursController');
 // router.param('id', toursController.checkID);
 
 router
+  .route('/top-5-cheap')
+  .get(toursController.aliasTopTours, toursController.getAllTours);
+
+router
   .route('/')
   .get(toursController.getAllTours)
   .post(toursController.createTour);
