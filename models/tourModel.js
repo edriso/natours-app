@@ -76,8 +76,9 @@ tourSchema.virtual('durationInWeeks').get(function () {
   if (this.duration) return this.duration / 7;
 });
 
-// Document Middleware: runs before .save() and .create() "not insertMany nor findAndUpdate..."
+// DOCUMENT MIDDLEWARE: runs before .save() and .create() "not insertMany nor findAndUpdate..."
 tourSchema.pre('save', function (next) {
+  // this refers to the current document
   this.slug = slugify(this.name, { lower: true });
   next();
 });
@@ -89,6 +90,7 @@ tourSchema.pre('save', function (next) {
 
 // QUERY MIDDLEWARE
 tourSchema.pre(/^find/, function (next) {
+  // this refers to the current query
   this.find({ secretTour: { $ne: true } });
   // this.start = Date.now();
   next();
@@ -97,6 +99,13 @@ tourSchema.pre(/^find/, function (next) {
 //   console.log(`Query took ${Date.now() - this.start} milliseconds`);
 //   next();
 // });
+
+// AGGREGATION MIDDLEWARE
+tourSchema.pre('aggregate', function (next) {
+  // this refers to the current aggregation object
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  next();
+});
 
 const Tour = mongoose.model('Tour', tourSchema);
 
