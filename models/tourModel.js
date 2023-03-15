@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -8,6 +9,7 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+    slug: String,
     price: {
       type: Number,
       required: [true, 'A tour must have a price'],
@@ -69,6 +71,18 @@ const tourSchema = new mongoose.Schema(
 tourSchema.virtual('durationInWeeks').get(function () {
   if (this.duration) return this.duration / 7;
 });
+
+// Document Middleware: runs before .save() and .create() "not insertMany"
+tourSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// tourSchema.post('save', function (doc, next) {
+//   // we don't have access to 'this', instead we have 'doc'
+//   console.log(doc);
+//   next();
+// });
 
 const Tour = mongoose.model('Tour', tourSchema);
 
