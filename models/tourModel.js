@@ -72,7 +72,7 @@ tourSchema.virtual('durationInWeeks').get(function () {
   if (this.duration) return this.duration / 7;
 });
 
-// Document Middleware: runs before .save() and .create() "not insertMany"
+// Document Middleware: runs before .save() and .create() "not insertMany nor findAndUpdate..."
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
