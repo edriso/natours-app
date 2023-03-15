@@ -59,6 +59,10 @@ const tourSchema = new mongoose.Schema(
     //   default: Date.now, //Date.now instead of Date.now(); this let's atlas make the time when going to server so it will be at least 1 millisecond difference "unique value"
     //   select: false,
     // },
+    // secretTour: {
+    //   type: Boolean,
+    //   default: false,
+    // },
   },
   {
     timestamps: true,
@@ -77,10 +81,21 @@ tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
-
 // tourSchema.post('save', function (doc, next) {
 //   // we don't have access to 'this', instead we have 'doc'
 //   console.log(doc);
+//   next();
+// });
+
+// QUERY MIDDLEWARE
+// tourSchema.pre(/^find/, function (next) {
+//   // tourSchema.pre('find', function (next) {
+//   this.find({ secretTour: { $ne: true } });
+//   this.start = Date.now();
+//   next();
+// });
+// tourSchema.post(/^find/, function (docs, next) {
+//   console.log(`Query took ${Date.now() - this.start} milliseconds`);
 //   next();
 // });
 
