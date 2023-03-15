@@ -9,7 +9,7 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true,
       maxlength: [40, 'A tour name should be less or equal to 40 characters'],
-      maxlength: [8, 'A tour name should be more or equal to 8 characters'],
+      minlength: [8, 'A tour name should be more or equal to 8 characters'],
     },
     slug: String,
     price: {
@@ -49,15 +49,28 @@ const tourSchema = new mongoose.Schema(
     ratingsAverage: {
       type: Number,
       default: 4.5,
-      min: [1, 'Rating must be above 1.0'],
-      max: [5, 'Rating must below 5.0'],
+      min: [1, 'Rating must be above or equals to 1.0'],
+      max: [5, 'Rating must below or equals to 5.0'],
     },
     ratingQuantity: {
       type: Number,
       default: 0,
     },
-    priceDiscount: Number,
     startDates: [Date],
+    priceDiscount: {
+      type: Number,
+      validate: {
+        validator: function (val) {
+          // this only refers to current document on creating a new doc
+          // to handle on update (note: price should also be sent):
+          if (this.op.match(/^find/)) {
+            return val < this.getUpdate().$set.price;
+          }
+          return val < this.price; // error if val is greater
+        },
+        message: 'Discount price ({VALUE}) should below regular price',
+      },
+    },
     secretTour: {
       type: Boolean,
       default: false,
