@@ -18,7 +18,7 @@ app.use('/api/v1/users', usersRouter);
 
 app.all('*', (req, res) => {
   res.status(404).json({
-    success: 'fail',
+    status: 'fail',
     message: `Can't find ${req.originalUrl} on this server!`,
   });
 });
