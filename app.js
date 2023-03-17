@@ -2,8 +2,8 @@ const express = require('express');
 const morgan = require('morgan');
 const toursRouter = require('./routes/toursRoutes');
 const usersRouter = require('./routes/usersRoutes');
-const AppError = require('./utils/appError');
-const globalErrorHandler = require('./controllers/errorController');
+const CustomAPIError = require('./utils/customError');
+const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
@@ -23,7 +23,7 @@ app.all('*', (req, res, next) => {
   // err.statusCode = 404;
   // err.status = 'fail';
 
-  const err = new AppError(
+  const err = new CustomAPIError(
     `Can't find ${req.originalUrl} on this server!`,
     404
   );
@@ -31,6 +31,6 @@ app.all('*', (req, res, next) => {
   next(err);
 });
 
-app.use(globalErrorHandler);
+app.use(errorHandler);
 
 module.exports = app;
