@@ -70,7 +70,7 @@ const tourSchema = new mongoose.Schema(
         validator: function (val) {
           // this only refers to current document on creating a new doc
           // to handle on update (note: price should also be sent):
-          if (this.op.match(/^find/)) {
+          if (this.op?.match(/^find/)) {
             return val < this.getUpdate().$set.price;
           }
           return val < this.price; // error if val is greater
