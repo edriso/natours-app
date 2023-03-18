@@ -1,7 +1,7 @@
 const CustomAPIError = require('../utils/customError');
 
 const handleCastErrorDB = (err) => {
-  const message = `Invalid ${err.path}: ${err.value}`;
+  const message = `Invalid ${err.path}: ${err.value}.`;
   return new CustomAPIError(message, 400);
 };
 
@@ -10,6 +10,15 @@ const handleDuplicateFieldsDB = (err) => {
   // const value = Object.values(err.keyValue)[0];
   const [key, value] = Object.entries(err.keyValue)[0];
   const message = `Duplicate field ${key}, ${value} already used.`;
+  return new CustomAPIError(message, 400);
+};
+
+const handleValidationErrorDB = (err) => {
+  const errors = Object.values(err.errors)
+    .map((e) => e.message)
+    .join(', ');
+
+  const message = `Invalid input data: ${errors}.`;
   return new CustomAPIError(message, 400);
 };
 
@@ -22,13 +31,13 @@ const sendError = (err, res) => {
       stack: err.stack,
     });
   } else if (err.isOperational) {
-    // Operational, trusted error: send message to client
+    // Operational, known errors: send message to client
     res.status(err.statusCode).json({
       status: err.status,
       message: err.message,
     });
   } else {
-    // Programming or unknown error: don't leak error details and send generic message
+    // Programming or unknown errors: don't leak error details and send generic message
     console.error('ERROR:', err);
 
     res.status(500).json({
@@ -48,13 +57,11 @@ const errorHandler = (err, req, res, next) => {
     error = handleCastErrorDB(error);
   } else if (error.code === 11000) {
     error = handleDuplicateFieldsDB(error);
+  } else if (error._message === 'Validation failed') {
+    error = handleValidationErrorDB(error);
   }
 
   sendError(error, res);
-  // res.status(err.statusCode).json({
-  //   status: err.status,
-  //   message: err.message,
-  // });
 };
 
 module.exports = errorHandler;
