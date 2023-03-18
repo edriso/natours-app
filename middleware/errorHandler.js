@@ -5,6 +5,14 @@ const handleCastErrorDB = (err) => {
   return new CustomAPIError(message, 400);
 };
 
+const handleDuplicateFieldsDB = (err) => {
+  // const key = Object.keys(err.keyValue)[0];
+  // const value = Object.values(err.keyValue)[0];
+  const [key, value] = Object.entries(err.keyValue)[0];
+  const message = `Duplicate field ${key}, ${value} already used.`;
+  return new CustomAPIError(message, 400);
+};
+
 const sendError = (err, res) => {
   if (process.env.NODE_ENV === 'development') {
     res.status(err.statusCode).json({
@@ -35,9 +43,11 @@ const errorHandler = (err, req, res, next) => {
   err.status = err.status || 'error';
 
   let error = { ...err };
-  // Handling invalid IDs
+  // Handling mongoose errors
   if (err.name === 'CastError') {
     error = handleCastErrorDB(error);
+  } else if (error.code === 11000) {
+    error = handleDuplicateFieldsDB(error);
   }
 
   sendError(error, res);
