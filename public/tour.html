@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta name="mapbox-public-token" content="" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -195,8 +196,9 @@
     <section class="section-map">
       <div id="map"></div>
       <script>
-        mapboxgl.accessToken =
-          'pk.eyJ1Ijoiam9uYXNzY2htZWR0bWFubiIsImEiOiJjam54ZmM5N3gwNjAzM3dtZDNxYTVlMnd2In0.ytpI7V7w7cyT1Kq5rT9Z1A';
+        const mapToken = document.querySelector('meta[name="mapbox-public-token"]').content;
+        if (mapToken.startsWith('pk.')) {
+        mapboxgl.accessToken = mapToken;
 
         const geojson = {
           type: 'FeatureCollection',
@@ -314,6 +316,9 @@
             }
           });
         });
+              } else {
+          document.getElementById('map').textContent = 'Map unavailable: configure a public Mapbox token.';
+        }
       </script>
     </section>
 
